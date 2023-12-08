@@ -75,6 +75,8 @@ spec:
             - name: ui-cert
               mountPath: '/etc/assemblyline/ssl/ui/'
           {{ end }}
+            - name: ui-tls-cert
+              mountPath: '/etc/assemblyline/ssl/ui/'
           resources:
             limits:
               cpu: {{.Values.uiLimCPU}}
@@ -110,6 +112,14 @@ spec:
         - name: ui-cert
           secret:
             secretName: ui-cert
+      {{ end }}
+      {{ if .Values.tlsSecretProvider.enabled }} # This is only used for the sites TLS
+        - name: ui-tls-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
       {{ end }}
 ---
 apiVersion: v1
@@ -189,6 +199,8 @@ spec:
             - name: ui-cert
               mountPath: '/etc/assemblyline/ssl/ui/'
           {{ end }}
+            - name: ui-tls-cert
+              mountPath: '/etc/assemblyline/ssl/ui/'
           ports:
             - containerPort: 5000
           resources:
@@ -226,6 +238,14 @@ spec:
         - name: ui-cert
           secret:
             secretName: internal-ui-cert
+      {{ end }}
+      {{ if .Values.tlsSecretProvider.enabled }} # This is only used for the sites TLS
+        - name: ui-tls-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
       {{ end }}
 ---
 apiVersion: v1
@@ -302,6 +322,8 @@ spec:
             - name: socketio-cert
               mountPath: '/etc/assemblyline/ssl/sio/'
           {{ end }}
+            - name: socketio-tls-cert
+              mountPath: '/etc/assemblyline/ssl/sio/'
           resources:
             limits:
               cpu: {{.Values.socketIOLimCPU}}
@@ -337,6 +359,14 @@ spec:
         - name: socketio-cert
           secret:
             secretName: socketio-cert
+      {{ end }}
+      {{ if .Values.tlsSecretProvider.enabled }} # This is only used for the sites TLS
+        - name: socketio-tls-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
       {{ end }}
 ---
 apiVersion: v1
@@ -406,11 +436,21 @@ spec:
             - name: frontend-cert
               mountPath: '/etc/certs/'
           {{ end }}
+            - name: frontend-tls-cert
+              mountPath: '/etc/certs/'
       volumes:
       {{ if .Values.enableInternalEncryption }}
         - name: frontend-cert
           secret:
             secretName: frontend-cert
+      {{ end }}
+      {{ if .Values.tlsSecretProvider.enabled }} # This is only used for the sites TLS
+        - name: frontend-tls-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
       {{ end }}
 {{ if .Values.separateIngestAPI }}
 ---
@@ -474,6 +514,8 @@ spec:
             - name: ui-cert
               mountPath: '/etc/assemblyline/ssl/ui/'
           {{ end }}
+            - name: ui-tls-cert
+              mountPath: '/etc/assemblyline/ssl/ui/'
           ports:
             - containerPort: 5000
           env:
@@ -526,5 +568,13 @@ spec:
         - name: ui-cert
           secret:
             secretName: ui-cert
+      {{ end }}
+      {{ if .Values.tlsSecretProvider.enabled }} # This is only used for the sites TLS
+        - name: ui-tls-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
       {{ end }}
 {{end}}
