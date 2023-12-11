@@ -25,7 +25,6 @@ metadata:
     {{- range $key, $value := .Values.ingressAnnotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-    appgw.ingress.kubernetes.io/backend-ssl-certificate: "frontend-cert"
     appgw.ingress.kubernetes.io/backend-hostname: "frontend"
 spec:
   tls:
@@ -54,7 +53,6 @@ metadata:
     {{- range $key, $value := .Values.ingressAnnotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-    appgw.ingress.kubernetes.io/backend-ssl-certificate: "socketio-cert"
     appgw.ingress.kubernetes.io/backend-hostname: "socketio"
 spec:
   tls:
@@ -83,7 +81,6 @@ metadata:
     {{- range $key, $value := .Values.ingressAnnotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-    appgw.ingress.kubernetes.io/backend-ssl-certificate: "ui-cert"
     appgw.ingress.kubernetes.io/backend-hostname: "ui"
 spec:
   tls:
@@ -113,8 +110,7 @@ metadata:
     {{- range $key, $value := .Values.ingressAnnotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
-    appgw.ingress.kubernetes.io/backend-ssl-certificate: "ui-cert"
-    appgw.ingress.kubernetes.io/backend-hostname: "ui-ingest"
+    appgw.ingress.kubernetes.io/backend-hostname: "ui"
 spec:
   tls:
     - hosts: [{{ .Values.configuration.ui.fqdn }}]
