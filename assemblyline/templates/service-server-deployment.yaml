@@ -48,9 +48,9 @@ spec:
               value: '2'
           {{ if .Values.enableInternalEncryption }}
             - name: CERTFILE
-              value: /etc/assemblyline/ssl/service-server/tls.crt
+              value: '/etc/assemblyline/ssl/service-server/{{ default "tls" .Values.tlsSecretProvider.tlsObjectName }}.crt'
             - name: KEYFILE
-              value: /etc/assemblyline/ssl/service-server/tls.key
+              value: '/etc/assemblyline/ssl/service-server/{{ default "tls" .Values.tlsSecretProvider.tlsObjectName }}.key'
           {{ end}}
           resources:
             limits:
@@ -82,9 +82,16 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 60
       volumes:
-        {{ if .Values.enableInternalEncryption }}
+      {{ if and .Values.enableInternalEncryption .Values.useSharedTLSCert }}    
+        - name: service-server-cert
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ .Values.tlsSecretProvider.className }}
+      {{ else if .Values.enableInternalEncryption }}
         - name: service-server-cert
           secret:
             secretName: service-server-cert
-        {{ end }}
+      {{ end }}
       {{ include "assemblyline.coreVolumes" . | indent 8 }}
